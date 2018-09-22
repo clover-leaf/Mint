@@ -1,0 +1,16 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file alias="next.png">image/next.png</file>
+<file alias="next_on.png">image/next_on.png</file>
+<file alias="pause.png">image/pause.png</file>
+<file alias="pause_on.png">image/pause_on.png</file>
+<file alias="play.png">image/play.png</file>
+<file alias="play_on.png">image/play_on.png</file>
+<file alias="previous.png">image/previous.png</file>
+<file alias="previous_on.png">image/previous_on.png</file>
+<file alias="disk_1.jpg">image/disk_1.jpg</file>
+<file alias="disk_2.jpg">image/disk_2.jpg</file>
+<file alias="disk_3.jpg">image/disk_3.jpg</file>
+<file alias="disk_4.jpg">image/disk_4.jpg</file>
+</qresource>
+</RCC>
