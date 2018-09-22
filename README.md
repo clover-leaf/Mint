@@ -1,4 +1,3 @@
 # Mint
 
-A Minimal Music Player. 
-Extensions supported are MP3, FLAC, WMA.
+This is a minimal music player which supported MP3, FLAC, WMA.
