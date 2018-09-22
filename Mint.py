@@ -361,8 +361,8 @@ class minimalPlayer(QWidget):
 		super().__init__()
 		self.setWindowFlags(Qt.Window|Qt.FramelessWindowHint|Qt.WindowMinMaxButtonsHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
-		self.press  = False
 		self.oldPos = None
+		self.press  = False
 		self.alive  = True
 		width       = 425
 
@@ -375,10 +375,12 @@ class minimalPlayer(QWidget):
 
 		self.q = QWidget(self)
 		self.q.setFixedSize(width, 200)
+		self.q.setMouseTracking(True)
 
 		#### SUB BAR ####
 		self.sub = subBar(self.q)
 		self.sub.setGeometry(15, 5, self.sub.width, self.sub.height + 10)
+		self.sub.setMouseTracking(True)
 		#### SUB BAR ####
 
 		#### MAIN BAR ####
@@ -386,6 +388,7 @@ class minimalPlayer(QWidget):
 		self.bar.setFixedSize(width, 100)
 		self.bar.setObjectName("bar")
 		self.bar.setGeometry(0, 80, width, 100)
+		self.bar.setMouseTracking(True)
 
 		previous_btn = subButton("previous")
 		play_btn     = primaryButton(self)
@@ -409,10 +412,12 @@ class minimalPlayer(QWidget):
 		margin_left = 25
 		margin_top = 180 - radius - 40
 		self.disk.setGeometry(margin_left, margin_top, radius, radius)
+		self.disk.setMouseTracking(True)
 		#### DISK ####
 
 		#### VOLUME ####
 		self.volume = volumeBar(self)
+		self.volume.setMouseTracking(True)
 		self.volume.setGeometry(220, 180, self.volume.width, self.volume.height - 10)
 		#### VOLUME ####
 
@@ -420,11 +425,9 @@ class minimalPlayer(QWidget):
 		next_btn.clicked.connect(self.playNextSong)
 		previous_btn.clicked.connect(self.playPreviousSong)
 		play_btn.clicked.connect(self.playSong)
-
-		self.Thread = Thread(target=self.target)
-		self.Thread.start()
-
+		
 		self.setAcceptDrops(True)
+		self.setMouseTracking(True)
 		self.setStyleSheet("""
 			QWidget#bar{
 				background-color: #fff;
@@ -432,6 +435,10 @@ class minimalPlayer(QWidget):
 				border-radius: 15;
 			}
 			""")
+		
+		self.Thread = Thread(target=self.target)
+		self.show()
+		self.Thread.start()
 
 	def target(self):
 		delay_t = 30
@@ -572,13 +579,19 @@ class minimalPlayer(QWidget):
 				self.sub.setLength(e.pos().x() - 185)
 				position = (e.pos().x() - 185)/self.sub.v_length * self.player.duration()
 				self.player.setPosition(position)
-
+		
 		else:
-			self.press = True
 			self.oldPos = e.globalPos()
-
+			self.press  = True
+		
 	def mouseMoveEvent(self, e):
-		if self.volume.rect.contains(e.pos()):
+		if e.buttons() == Qt.NoButton:
+			if self.disk.circle.contains(e.pos()):
+				self.setCursor(QCursor(Qt.PointingHandCursor))
+			else:
+				self.setCursor(QCursor(Qt.ArrowCursor))
+		
+		elif self.volume.rect.contains(e.pos()):
 			self.volume.setLength(e.pos().x() - 230)
 			volume = int((e.pos().x() - 230)/(self.volume.width - 20)*100)
 			self.player.setVolume(volume)
@@ -589,19 +602,17 @@ class minimalPlayer(QWidget):
 				position = (e.pos().x() - 185)/self.sub.v_length * self.player.duration()
 				self.player.setPosition(position)
 
-		else:
-			if self.press:
-				delta = QPoint(e.globalPos() - self.oldPos)
-				self.move(self.x() + delta.x(), self.y() + delta.y())
-				self.oldPos = e.globalPos()
+		elif self.press:
+			delta = QPoint(e.globalPos() - self.oldPos)
+			self.move(self.x() + delta.x(), self.y() + delta.y())
+			self.oldPos = e.globalPos()
 
 	def mouseReleaseEvent(self, e):
-		self.press = False
 		self.oldPos = None
+		self.press  = False
 
 				  
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	ex = minimalPlayer()
-	ex.show()
 	sys.exit(app.exec_())
